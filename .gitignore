@@ -1,0 +1,24 @@
+# Python
+.env
+__pycache__/
+.pyc
+.pyo
+.pyd
+venv/
+.venv/
+
+# ChromaDB
+chroma_db/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Misc
+.log
