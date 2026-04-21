@@ -19,3 +19,11 @@ def root():
 def health_check():
     return{"status":"ok"}
 
+@app.get("/about")
+def about():
+    return {
+        "developer": "Aniket Pandey",
+        "project": "DocMind",
+        "version": "0.1.0",
+        "github": "https://github.com/Aniket01-110/Docmind"
+    }
