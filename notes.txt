@@ -30,3 +30,209 @@ Claude generates answer grounded in the document
 Answer + question saved to Supabase Chat history
 
 Response returned to user
+
+
+
+================================================================
+PROJECT: DocMind — Multimodal RAG System
+================================================================
+GITHUB: https://github.com/Aniket01-110/Docmind
+DEVELOPER: Aniket Pandey
+STARTED: April 2026
+================================================================
+
+PRODUCT GOAL:
+A multimodal RAG web app where any user can:
+- Upload PDFs, images, audio, CSVs/graphs
+- Ask questions and get AI answers from their documents
+- Auto-generate new PDFs from conversations
+- Have persistent per-user chat history with login system
+
+================================================================
+TECH STACK:
+================================================================
+LLM          → Claude API (Anthropic)
+Embeddings   → sentence-transformers (free, local)
+Vector DB    → ChromaDB (free, local)
+Audio→Text   → OpenAI Whisper (free, local)
+Image/Graph  → Claude Vision API
+PDF Parsing  → PyMuPDF + pdfplumber
+Backend      → FastAPI (Python)
+Frontend     → React.js + TailwindCSS
+Auth + DB    → Supabase (free tier)
+PDF Generate → ReportLab
+Deploy Back  → Render (free tier)
+Deploy Front → Vercel (free tier)
+
+================================================================
+FOLDER STRUCTURE:
+================================================================
+docmind/
+├── backend/
+│   ├── app/
+│   │   ├── main.py          ← FastAPI entry point
+│   │   ├── config.py        ← reads .env, stores variables
+│   │   ├── __init__.py
+│   │   ├── api/             ← routes (empty, fills in Week 2+)
+│   │   │   └── __init__.py
+│   │   ├── services/        ← all business logic
+│   │   │   ├── __init__.py
+│   │   │   └── ingestion/   ← file parsers
+│   │   │       └── __init__.py
+│   │   ├── models/          ← Pydantic data shapes
+│   │   │   └── __init__.py
+│   │   └── middleware/      ← auth guards
+│   │       └── __init__.py
+│   ├── tests/
+│   └── .env                 ← secrets, never pushed to GitHub
+├── frontend/
+│   └── src/
+│       ├── components/
+│       ├── context/
+│       ├── pages/
+│       └── services/
+├── .gitignore
+├── requirements.txt
+└── notes.txt
+
+================================================================
+TEACHING STYLE (tell Claude this every session):
+================================================================
+- First explain the big picture goal of what we are building
+- Then show the full code
+- Then break down every single line
+- Explain why each line is there
+- Explain why it is in this specific place
+- Give a test to verify it works
+- Give an exercise to write myself
+
+================================================================
+COMPLETE PROJECT ROADMAP:
+================================================================
+
+PHASE 1 — BACKEND FOUNDATION
+------------------------------
+Session 1  → Folder structure + config.py + main.py    [✅ DONE]
+Session 2  → Pydantic models — request/response shapes  [⏳ NEXT]
+Session 3  → Environment variables deep dive            [⏳]
+Session 4  → FastAPI routers — connecting api/ folder   [⏳]
+Session 5  → PDF parser — extract text from documents   [⏳]
+
+PHASE 2 — RAG CORE
+------------------------------
+Session 6  → Chunking — split text into pieces          [⏳]
+Session 7  → Embeddings — text into math vectors        [⏳]
+Session 8  → ChromaDB — store and search vectors        [⏳]
+Session 9  → Claude API — send context, get answers     [⏳]
+Session 10 → Full RAG pipeline — connect everything     [⏳]
+
+PHASE 3 — MULTIMODAL
+------------------------------
+Session 11 → Audio parser — Whisper transcription       [⏳]
+Session 12 → Image/graph parser — Claude Vision         [⏳]
+Session 13 → CSV parser — Pandas for data files         [⏳]
+
+PHASE 4 — AUTH AND USERS
+------------------------------
+Session 14 → Supabase setup — database + auth           [⏳]
+Session 15 → Signup and Login API routes                [⏳]
+Session 16 → JWT middleware — protecting routes         [⏳]
+Session 17 → Per-user chat history                      [⏳]
+
+PHASE 5 — FEATURES
+------------------------------
+Session 18 → PDF generation from chat                   [⏳]
+Session 19 → Document management per user               [⏳]
+
+PHASE 6 — FRONTEND
+------------------------------
+Session 20 → React setup + API connection layer         [⏳]
+Session 21 → Login and Signup pages                     [⏳]
+Session 22 → Dashboard — upload + document list         [⏳]
+Session 23 → Chat UI — messages, history, export        [⏳]
+
+PHASE 7 — SHIP IT
+------------------------------
+Session 24 → Docker — containerising the backend        [⏳]
+Session 25 → Deploy backend to Render                   [⏳]
+Session 26 → Deploy frontend to Vercel                  [⏳]
+Session 27 → README, demo GIF, GitHub polish            [⏳]
+
+================================================================
+PARALLEL LEARNING TRACK (do these alongside building):
+================================================================
+DAILY (30 min):
+- Solve 1 Easy Python problem on leetcode.com
+- Git commit every single day — keep GitHub green
+- Read one FastAPI doc page: fastapi.tiangolo.com/tutorial
+
+WEEKLY:
+- Watch 1 video from Andrej Karpathy on YouTube
+- Read 1 HuggingFace blog post: huggingface.co/blog
+- Complete 1 Kaggle micro-course lesson
+
+CERTIFICATIONS TO COMPLETE:
+[ ] HuggingFace NLP Course — huggingface.co/learn
+[ ] Google ML Crash Course — google.com/machine-learning/crash-course
+[ ] Google Cloud Skills Boost — ML path
+[ ] DeepLearning.AI Short Courses — deeplearning.ai/short-courses
+[ ] Fast.ai Practical Deep Learning — fast.ai
+
+================================================================
+SESSION PROGRESS LOG:
+================================================================
+
+SESSION 1 — April 21, 2026
+Topics: Folder structure, virtual environment,
+        config.py, main.py, FastAPI basics
+Concepts learned:
+  - What virtual environments are and why we use them
+  - How .env files work and why secrets stay out of GitHub
+  - What load_dotenv() does and why it runs first
+  - Difference between string "True" and boolean True
+  - What a FastAPI route is and how decorators work
+  - What uvicorn does and why we need it
+  - What /docs endpoint is (Swagger UI)
+  - Git flow: add → commit → push
+  - Why config.py exists instead of hardcoding values
+Files created:
+  - backend/app/config.py
+  - backend/app/main.py
+Server status: ✅ Running on http://localhost:8000
+Exercise: Add /about route (completed/pending)
+
+================================================================
+HOW TO RESUME IN A NEW CHAT:
+================================================================
+Paste this entire notes.txt to Claude and say:
+
+"I am Aniket, a fresher building DocMind — a multimodal 
+RAG system. Here are my complete project notes: [paste notes]
+
+We completed up to Session [X]. 
+Please continue from Session [X+1].
+
+Teaching style I need:
+1. Big picture goal first
+2. Full code
+3. Line by line breakdown
+4. Why each line exists
+5. Test to verify
+6. Exercise to write myself"
+
+================================================================
+GOLDEN RULES I AM LEARNING:
+================================================================
+1. Never commit .env to GitHub — secrets stay local
+2. Never put logic in routes — routes receive, services think
+3. Never hardcode values — everything goes in config
+4. One function = one job — split if it does more
+5. Commit small and often — every working feature
+6. Test each piece alone before connecting
+7. If you cannot explain a line in plain English — you
+   do not understand it yet. Do not move on.
+8. Always pull before push — git pull then git push
+9. Never edit directly on GitHub — always local first
+10. Double quotes everywhere in Python — stay consistent
+
+================================================================
