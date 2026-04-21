@@ -1,0 +1,32 @@
+Workflow of the RAG pipeline 
+
+User uploads file 
+
+file type detected(PDF/audio/image/csv/tables)
+
+Parser extracts the raw content
+
+PDF - text+tables(PyMuPDF)
+AUDIO - transcripts(Whisper)
+Image - description(Claude vision)
+CSV - summary+raw data(Pandas)
+
+Content split into chunks
+
+Each chunk is mapped into embedding vector
+
+Vectors stored in ChromaDB
+
+Users asks a question
+
+Question -> Embedding -> similarity search in ChromaDB
+
+Top 5 relevant chunks retrieved 
+
+Chunks + question sent to claudeAPI as context 
+
+Claude generates answer grounded in the document
+
+Answer + question saved to Supabase Chat history
+
+Response returned to user
