@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.config import APP_NAME #go into app folder then find config file and grab APP_NAME
+from app.models.user import UserSignupRequest
 
 app = FastAPI(
     title=APP_NAME,
@@ -27,3 +28,4 @@ def about():
         "version": "0.1.0",
         "github": "https://github.com/Aniket01-110/Docmind"
     }
+    
