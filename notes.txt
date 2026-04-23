@@ -236,3 +236,19 @@ GOLDEN RULES I AM LEARNING:
 10. Double quotes everywhere in Python — stay consistent
 
 ================================================================
+
+session 1 completed (21/4/26)
+
+pydantic working in /post request for signup
+
+User sends POST /auth/signup with JSON body
+        ↓
+FastAPI reads the body
+        ↓
+Pydantic validates it against UserSignupRequest
+        ↓
+If valid → passes to your function as `request`
+If invalid → returns error before your function runs
+
+session 2 completed(22/4/26)
+session 3 completed(22/4/26)
