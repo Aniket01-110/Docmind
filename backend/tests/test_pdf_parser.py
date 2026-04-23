@@ -1,44 +1,50 @@
-# backend/tests/test_pdf_parser.py
-
 from app.services.ingestion.pdf_parser import extract_pdf_content
 from app.services.ingestion.chunker import chunk_document
+from app.services.embeddings import (
+    embed_Text,
+    embed_texts,
+    embed_chunks,
+    cosine_similarity
+)
 
+def test_embeddings():
 
-def test_pdf_parser():
+    # Test 1 — single embedding
+    text = "Gradient descent is an optimization algorithm"
+    embedding = embed_Text(text)
 
-    file_path = "tests/sample.pdf"
-    result = extract_pdf_content(file_path)
+    print(f"\n=== EMBEDDING TEST ===")
+    print(f"Text: {text}")
+    print(f"Vector dimensions: {len(embedding)}")
+    print(f"First 5 values: {embedding[:5]}")
 
-    print("=== METADATA ===")
-    print(result["metadata"])
+    # Test 2 — similarity between related texts
+    text1 = "machine learning optimization"
+    text2 = "gradient descent algorithm"
+    text3 = "my cat loves fish"
 
-    print("\n=== TOTAL PAGES ===")
-    print(result["total_pages"])
+    emb1 = embed_texts(text1)
+    emb2 = embed_texts(text2)
+    emb3 = embed_texts(text3)
 
-    print("\n=== TEXT PREVIEW ===")
-    print(result["text"][:500])
+    sim_related = cosine_similarity(emb1, emb2)
+    sim_unrelated = cosine_similarity(emb1, emb3)
 
-    print("\n=== TABLES FOUND ===")
-    print(f"{len(result['tables'])} tables found")
+    print(f"\n=== SIMILARITY TEST ===")
+    print(f"'{text1}' vs '{text2}'")
+    print(f"Similarity: {sim_related:.3f}  ← should be HIGH")
 
+    print(f"\n'{text1}' vs '{text3}'")
+    print(f"Similarity: {sim_unrelated:.3f} ← should be LOW")
 
-def test_chunker():
-
+    # Test 3 — embed all chunks from resume
     file_path = "tests/sample.pdf"
     extracted = extract_pdf_content(file_path)
-    chunks = chunk_document(extracted, document_id="test_doc_001")
+    chunks = chunk_document(extracted, "test_doc_001")
+    embedded_chunks = embed_chunks(chunks)
 
-    print(f"\n=== TOTAL CHUNKS: {len(chunks)} ===")
+    print(f"\n=== CHUNKS EMBEDDED ===")
+    print(f"Total chunks embedded: {len(embedded_chunks)}")
+    print(f"Embedding dimensions: {len(embedded_chunks[0]['embedding'])}")
 
-    for chunk in chunks:
-        print(f"\n{'='*50}")
-        print(f"Chunk Index : {chunk['chunk_index']}")
-        print(f"Type        : {chunk['chunk_type']}")
-        print(f"Size        : {chunk['chunk_size']} chars")
-        print(f"Text Preview:\n{chunk['text'][:300]}")
-        print(f"{'='*50}")
-
-
-# Run both tests
-test_pdf_parser()
-test_chunker()
+test_embeddings()

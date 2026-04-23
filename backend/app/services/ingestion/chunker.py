@@ -153,8 +153,7 @@ def clean_text(text: str) -> str:
 # HELPER — chunk with metadata
 # ─────────────────────────────────────────
 
-def chunk_document(extracted_content: dict,
-                   document_id: str) -> List[dict]:
+def chunk_document(extracted_content: dict,document_id: str) -> List[dict]:
     """
     Chunk a full document including tables.
     Takes output from pdf_parser and returns
