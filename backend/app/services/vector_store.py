@@ -69,11 +69,11 @@ def add_chunks(chunks: List[dict]) -> bool:
             metadatas=metadatas
         )
 
-        print(f"✅ Added {len(chunks)} chunks to ChromaDB")
+        print(f"Added {len(chunks)} chunks to ChromaDB")
         return True
 
     except Exception as e:
-        print(f"❌ Error adding chunks: {e}")
+        print(f" Error adding chunks: {e}")
         return False
 
 
@@ -145,7 +145,7 @@ def search_chunks(
         return chunks
 
     except Exception as e:
-        print(f"❌ Error searching chunks: {e}")
+        print(f" Error searching chunks: {e}")
         return []
 
 
@@ -169,11 +169,11 @@ def delete_document_chunks(document_id: str) -> bool:
             where={"document_id": document_id}
         )
 
-        print(f"✅ Deleted chunks for document: {document_id}")
+        print(f" Deleted chunks for document: {document_id}")
         return True
 
     except Exception as e:
-        print(f"❌ Error deleting chunks: {e}")
+        print(f" Error deleting chunks: {e}")
         return False
 
 
