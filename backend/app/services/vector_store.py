@@ -32,7 +32,7 @@ collection = client.get_or_create_collection(
 def add_chunks(chunks: List[dict]) -> bool:
     """
     Store embedded chunks in ChromaDB.
-    Takes output from embed_chunks() in Session 6.
+    Takes output from embed_chunks() 
 
     Args:
         chunks: list of chunk dicts with embeddings
