@@ -1,4 +1,4 @@
-from dotenv import load_dotenv #load_dotenv  is funciton inside the dotenv package
+from dotenv import load_dotenv 
 import os
 
 load_dotenv()  #finds .env file, opens it, and reads every line, and loads each variable into system environment memory --So that python can access them
