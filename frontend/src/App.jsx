@@ -1,3 +1,4 @@
+import SimpleForm from "./components/SimpleForm";
 function App() {
   return (
     <div
@@ -15,6 +16,7 @@ function App() {
       <h1> DocMind</h1>
       <p>AI-powered document assistant</p>
       <p style={{ color: "#4ade80" }}>✅ React frontend is working!</p>
+      <SimpleForm />
     </div>
   );
 }

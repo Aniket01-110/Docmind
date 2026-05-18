@@ -1,35 +1,32 @@
-//Practicing first simple form building before full fledged signup system
-
+//practing simple form using react js
 import { useState } from "react";
 
 function SimpleForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    //Simple validation
     if (!name || !email) {
-      setError("All fields required");
+      setError("All fields are required");
       return;
     }
-
-    if (!email.includes("@")) {
-      setError("Invalid email");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Invalid email — enter a valid email like name@gmail.com");
       return;
     }
     setError("");
     setSubmitted(true);
   };
-
   if (submitted) {
     return (
       <div>
         <h2>Welcome {name}!</h2>
-        <p>Signed up with: {email}</p>
+        <p> Signed up with {email}</p>
       </div>
     );
   }
@@ -40,17 +37,18 @@ function SimpleForm() {
 
       <input
         type="text"
-        placeholder="Your Name"
+        placeholder="Your name"
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
+
       <input
         type="text"
         placeholder="Your Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <button type="submit">Sign Up</button>
+      <button type="submit">SignUp</button>
     </form>
   );
 }
