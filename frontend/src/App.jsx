@@ -1,5 +1,8 @@
 import Loginform from "./components/pracloginform";
+import FakeSignUp from "./components/prc";
 /*import SimpleForm from "./components/SimpleForm";*/
+import TabSwitcher from "./components/TabSwitcher";
+
 function App() {
   return (
     <div
@@ -19,6 +22,8 @@ function App() {
       <p style={{ color: "#4ade80" }}>✅ React frontend is working!</p>
 
       <Loginform />
+      <TabSwitcher />
+      <FakeSignUp />
     </div>
   );
 }
