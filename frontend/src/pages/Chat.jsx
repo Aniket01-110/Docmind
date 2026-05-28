@@ -113,8 +113,10 @@ export default function Chat() {
           }),
         },
       );
+      console.log("STATUS:", response.status);
 
       const data = await response.json();
+      console.log(data);
 
       // Add AI response to UI
       const aiMessage = {
