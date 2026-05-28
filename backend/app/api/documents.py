@@ -20,56 +20,6 @@ Uploaded_dir = "uploads"
 os.makedirs(Uploaded_dir, exist_ok=True)
 
 
-@router.post("/upload")
-async def upload_document(file: UploadFile = File(...)):
-    """"""
-    
-    
-    if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400,
-        detail="Only PDF files supported currently")
-        
-    document_id = str(uuid.uuid4())
-    
-    file_path = f"{Uploaded_dir}/{document_id}.pdf"
-    
-    try:
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
-        if document_exists(document_id):
-            return{
-                "message": "Document already processed",
-                "document_id": document_id
-            }
-            
-        print(f"extracting content from{file.filename}...")
-        extracted = extract_pdf_content(file_path)
-        
-        print(f"chunking document...")
-        chunks = chunk_document(extracted, document_id)
-        
-        print(f"embedding chunks...")
-        embedded_chunks = embed_chunks(chunks)
-        
-        print(f"Storing in ChromaDB")
-        success = add_chunks(embedded_chunks)
-        
-        if not success:
-            raise HTTPException(status_code = 500, detail = "Failed to store document")
-        
-        return{
-            "message":"Document processed successfully",
-            "document_id": document_id,
-            "filename" : file.filename,
-            "total_chunks": len(chunks),
-            "total_pages" : extracted["total_pages"],
-            "metadata" : extracted["metadata"]
-        }
-    
-    finally:
-        if os.path.exists(file_path):
-            os.remove(file_path)
             
 @router.get("/")
 async def list_documents():
@@ -79,8 +29,8 @@ async def list_documents():
     }
     
     
-@router.delete("/documents_id")
-async def delete_document(documents_id):
+@router.delete("/{documents_id}")
+async def delete_document(documents_id: str):
     #delete all documents and its chunks
     
     success = delete_document_chunks(documents_id)
@@ -95,7 +45,7 @@ async def delete_document(documents_id):
 
 
 # Add audio formats to accepted types
-ACCEPTED_FORMATS = [".pdf", ".mp3", ".wav", ".m4a", ".mp4"]
+ACCEPTED_FORMATS = [".pdf", ".mp3", ".wav", ".m4a", ".mp4",".doc",".docx"]
 
 @router.post("/upload")
 async def upload_document(file: UploadFile = File(...)):
@@ -113,7 +63,7 @@ async def upload_document(file: UploadFile = File(...)):
         )
 
     document_id = str(uuid.uuid4())
-    file_path = f"{UPLOAD_DIR}/{document_id}{file_extension}"
+    file_path = f"{Uploaded_dir}/{document_id}{file_extension}"
 
     try:
         with open(file_path, "wb") as buffer:
@@ -123,6 +73,11 @@ async def upload_document(file: UploadFile = File(...)):
         if file_extension == ".pdf":
             from app.services.ingestion.pdf_parser import extract_pdf_content
             extracted = extract_pdf_content(file_path)
+            
+        elif file_extension == ".docx":
+            from app.services.ingestion.docx_parser import extract_docx_content
+            extracted = extract_docx_content(file_path)
+
 
         elif file_extension in [".mp3", ".wav", ".m4a", ".mp4"]:
             from app.services.ingestion.audio_parser import extract_audio_content
@@ -145,7 +100,7 @@ async def upload_document(file: UploadFile = File(...)):
             "filename": file.filename,
             "file_type": file_extension,
             "total_chunks": len(chunks),
-            "total_pages": extracted["total_pages"],
+            "total_pages": extracted.get("total_pages", 1),
             "metadata": extracted["metadata"]
         }
 

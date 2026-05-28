@@ -2,6 +2,7 @@ from app.services.vector_store import (
     add_chunks,
     search_chunks,
     get_chunk_count,
+    get_document_chunk_count,
     document_exists
 )
 from app.services.embeddings import embed_chunks, embed_Text

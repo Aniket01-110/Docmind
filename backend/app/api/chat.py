@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.models.chat import ChatQueryRequest
 from app.services.rag_engine import query_document
+from app.services.rag_engine import client
 router = APIRouter(prefix="/chat", tags=["chat"])
 
 @router.post("/query")
@@ -29,3 +30,24 @@ async def get_chat_history(document_id:str):
         
     }
 
+@router.get("/test-groq")
+def test_groq():
+
+    print("TEST ROUTE HIT")
+
+    response = client.chat.completions.create(
+        model="llama3-8b-8192",
+        timeout=30,
+        messages=[
+            {
+                "role": "user",
+                "content": "Say hello"
+            }
+        ]
+    )
+
+    print("GROQ RESPONSE RECEIVED")
+
+    return {
+        "response": response.choices[0].message.content
+    }

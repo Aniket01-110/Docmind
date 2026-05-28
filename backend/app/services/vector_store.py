@@ -176,14 +176,28 @@ def delete_document_chunks(document_id: str) -> bool:
         print(f" Error deleting chunks: {e}")
         return False
 
+def get_chunk_count(document_id: str = None) -> int:
+    """count all chunk"""
+    if document_id:
+        results = collection.get(
+            where={"document_id": document_id}
+        )
+        return len(results["ids"])
+    return collection.count()
+    
 
 
-def get_chunk_count() -> int:
+def get_document_chunk_count(document_id: str ) -> int:
     """
     Returns total number of chunks in collection.
     Useful for monitoring and debugging.
     """
-    return collection.count()
+    
+    results = collection.get(
+            where={"document_id": document_id}
+        )
+    return len(results["ids"])
+    
 
 
 

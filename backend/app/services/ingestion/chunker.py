@@ -131,9 +131,10 @@ def chunk_document(
                 "source": filename
             }
         })
-
-    # Chunk tables
-    for table in extracted_content["tables"]:
+    print(extracted_content)
+    
+    # Chunk tables 
+    for table in extracted_content.get("table", []):
         table_chunks = chunk_text(table["content"])
 
         for chunk in table_chunks:

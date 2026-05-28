@@ -10,3 +10,4 @@ def export_pdf(request: ExportPDFRequest):
         "title": request.title,
         "document_id":request.document_id
     }
+    

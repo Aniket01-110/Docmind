@@ -6,9 +6,10 @@ from app.config import GROQ_API_KEY
 from app.services.embeddings import embed_Text
 from app.services.vector_store import search_chunks
 from app.services.vector_store import get_chunk_count
+from app.services.vector_store import get_document_chunk_count
 
 # ─────────────────────────────────────────
-# GROQ CLIENT SETUP
+# GROQ CLIENT SETUP  
 # ─────────────────────────────────────────
 
 # Initialize Groq client once at module level
@@ -33,17 +34,19 @@ MAX_TOKENS = 1024
 SYSTEM_PROMPT = """You are DocMind, an intelligent document assistant.
 
 Your job is to answer questions based ONLY on the document
-context provided to you. Follow these rules strictly:
+context provided to you.
 
-1. ONLY use information from the provided context
-2. If the answer is not in the context, say clearly:
-   "I couldn't find this information in the document."
-3. Always be specific and reference the document content
-4. Never make up information not present in the context
-5. Keep answers clear, concise and helpful
-6. If asked about something partially covered, answer
-   what you can and note what's missing"""
+Rules:
 
+1.Priortize factual accuracy from the document
+2. If the exact answer exists in the context, provide it clearly
+3. If the answer is not explicity stated but is strongly implied, you may provide the inferred answer BUT clearly mention that it is inferred from the document context.
+4. Never invent unsupported facts.
+5. If information is missing entirely, say:
+"I couldnt find this information in this document"
+6.Keep answers concise, helpful, and context-aware
+
+7. When possible,  mention which part of the document supports the answer"""                                                                                                                                                                                                        
 
 
 # BUILD CONTEXT
@@ -76,39 +79,85 @@ def build_prompt(question: str, context: str) -> str:
     Combine context and question into full prompt.
     """
 
-    return f"""Here are the relevant sections from the document:
-
+    return f"""
+Document Context:
 {context}
 
 Based ONLY on the context above, please answer
 this question:
-
 {question}
+INSTRUCTIONS:
+-Answer ONLY using the document context
+-If exact information exists, provide it directly.
+-If strongly implied, clearly label it as inferred.
 
-If the information is not in the context above,
-say so clearly rather than guessing."""
+ANSWER:
+"""
 
 
 
 # GENERATE ANSWER
 
 
-def generate_answer(question: str,
-                    context: str) -> str:
-    """
-    Send question + context to Groq and get answer.
-    """
+def query_document(question: str,
+                   document_id: str,
+                   n_results: int = 5) -> dict:
 
     try:
+        print("\nQUERY STARTED")
+        print("Question:", question)
+        print("Document ID:", document_id)
+
+        # STEP 1 — Embed Question
+        print("\nSTEP 1: Embedding question...")
+        question_embedding = embed_Text(question)
+        print("STEP 1 DONE")
+
+        # STEP 2 — Get Chunk Count
+        print("\nSTEP 2: Getting chunk count...")
+        total_chunks = get_document_chunk_count(document_id)
+        print("Total Chunks:", total_chunks)
+
+        n_results = min(n_results, total_chunks)
+
+        # STEP 3 — Retrieve Chunks
+        print("\nSTEP 3: Searching chunks...")
+        chunks = search_chunks(
+            query_embedding=question_embedding,
+            document_id=document_id,
+            n_results=n_results
+        )
+
+        print("STEP 3 DONE")
+        print("Retrieved Chunks:", len(chunks))
+
+        # If no chunks found
+        if not chunks:
+            print("No chunks found.")
+
+            return {
+                "answer": "No relevant content found in document.",
+                "sources": [],
+                "similarity_scores": [],
+                "question": question,
+                "document_id": document_id,
+                "chunks_used": 0
+            }
+
+        # STEP 4 — Build Context
+        print("\nSTEP 4: Building context...")
+        context = build_context(chunks)
+        print("STEP 4 DONE")
+
+        # STEP 5 — Generate Answer
+        print("\nSTEP 5: Calling Groq...")
+
         prompt = build_prompt(question, context)
 
-        # Groq uses OpenAI-compatible API structure
-        # messages list contains conversation history
-        # system message → instructions
-        # user message → question + context
         response = client.chat.completions.create(
-            model=MODEL,
+            model="llama3-8b-8192",
             max_tokens=MAX_TOKENS,
+            timeout=30,
             messages=[
                 {
                     "role": "system",
@@ -121,13 +170,38 @@ def generate_answer(question: str,
             ]
         )
 
-        # Extract answer text from response
-        # choices[0] → first completion choice
-        # message.content → actual text
-        return response.choices[0].message.content
+        print("STEP 5 DONE")
+
+        answer = response.choices[0].message.content
+
+        print("\n ANSWER GENERATED ")
+        print(answer)
+
+        # FINAL RETURN
+        return {
+            "answer": answer,
+            "sources": [chunk["text"][:200] for chunk in chunks],
+            "similarity_scores": [
+                chunk["similarity"] for chunk in chunks
+            ],
+            "question": question,
+            "document_id": document_id,
+            "chunks_used": len(chunks)
+        }
 
     except Exception as e:
-        return f"Error generating answer: {str(e)}"
+        print("\n========== ERROR ==========")
+        print(str(e))
+
+        return {
+            "answer": f"Error: {str(e)}",
+            "sources": [],
+            "similarity_scores": [],
+            "question": question,
+            "document_id": document_id,
+            "chunks_used": 0
+        }
+     
 
 
 
@@ -149,24 +223,30 @@ def query_document(question: str,
     5. Return answer + sources
     """
 
-    
+    print("step1: entered query_document")
 
     # ── Step 1: Embed question ──
-    print(f" Embedding question...")
     question_embedding = embed_Text(question)
+    print(f" step 2 Embedding question...")
+    
+    total_chunks = get_document_chunk_count(document_id) 
+    print("step 3: got chunk count")
+    
+    
 
     # ── Step 2: Smart retrieval ──
     # get total chunks for this document
     # retrieve all of them if small document
-    total_chunks = get_chunk_count()
-    n_results = min(n_results, total_chunks)
+    
+   
 
-    print(f" Searching {total_chunks} chunks...")
+    
     chunks = search_chunks(
         query_embedding=question_embedding,
         document_id=document_id,
         n_results=n_results
     )
+    print("Step 4: retrieval done")
 
     if not chunks:
         return {
@@ -177,12 +257,18 @@ def query_document(question: str,
         }
 
     #  Step 3: Build context 
+    
+   
+
     context = build_context(chunks)
-
+    print('step 5 : context built')
     # Step 4: Generate answer
-    print(f" Generating answer with Groq...")
+    
+    
     answer = generate_answer(question, context)
+    print("step 6: answer generated")
 
+    print("Step 7 answer generated")
     # Step 5: Return everything 
     return {
         "answer": answer,
@@ -192,3 +278,27 @@ def query_document(question: str,
         "document_id": document_id,
         "chunks_used": len(chunks)
     }
+def generate_answer(question: str, context: str) -> str:
+    """send question + context to groq and get an answer
+    """
+    try:
+        prompt = build_prompt(question, context)
+        
+        response = client.chat.completions.create(
+            model = MODEL,
+            max_tokens = MAX_TOKENS,
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT
+                },
+                {
+                    "role": "user",
+                    "content" : prompt
+                }
+            ]
+        )
+        return response.choices[0].message.content
+    
+    except Exception as e:
+        return f"Error generating answer:{str(e)}"

@@ -2,6 +2,7 @@ import fitz
 import pdfplumber
 import os
 
+
 def extract_pdf_content(file_path: str) -> dict:
     """ Extract all content from a PDF file .
     Args:
@@ -110,6 +111,7 @@ def extract_metadata(file_path: str) -> dict:
             "modified": raw_metadata.get("modifiedDate", "Unknown"),
             "file_size_kb": round(os.path.getsize(file_path)/1024,2) #divided by 1024 to get answer in kilobytes and upto 2 decimal places
         }
+
 
             
             
