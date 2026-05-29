@@ -13,3 +13,4 @@ numpy
 torch
 transformers
 email-validator
+PyMuPDF
