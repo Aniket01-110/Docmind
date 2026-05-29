@@ -12,3 +12,4 @@ python-docx
 numpy
 torch
 transformers
+email-validator
