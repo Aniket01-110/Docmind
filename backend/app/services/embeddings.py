@@ -3,26 +3,25 @@ from typing import List
 import numpy as np
 
 
-#MODEL setup 
-model_name="all-MiniLM-L6-v2"
+model = None
+model_name = "all-MiniLM-L6-v2"
 
-#loading model is slow , so we load a model once when server starts, not every time when we need embeddings
-model = SentenceTransformer(model_name)
-
+def get_model():
+    global model
+    
+    if model is None:
+        print("Loading embedding model...")
+        model = SentenceTransformer(model_name)
+    
+    return model
 
 #single text embedding
 
 def embed_Text(text: str) -> List[float]:
-    """Convert a single piece of text into an embedding vector.
-    
-    Args:
-        text:any string to embed
-        
-    Returns:
-        list of 384 floats representing  the text meaning
-    """
-    embedding  = model.encode(text, convert_to_numpy=True) #encode converts text into vector form
+    model = get_model()
+    embedding = model.encode(text, convert_to_numpy=True)
     return embedding.tolist()
+
 
 
 #BATCH EMBEDDING - multiple texts at once
@@ -35,7 +34,7 @@ def embed_texts(texts: List[str]) ->List[List[float]]:
     Returns:
         list of embedding vectors, one per text
     """
-    
+    model = get_model()
     embeddings = model.encode(texts, batch_size=32, show_progress_bar=True, convert_to_numpy=True)
     return embeddings.tolist()
 
