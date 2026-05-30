@@ -70,7 +70,30 @@ def build_context(chunks: List[dict]) -> str:
 
     return "\n---\n".join(context_parts)
 
+#build prompt
+def build_prompt(question: str, context: str) -> str:
+    """
+    Build final prompt sent to Groq.
+    Combines retrieved document context with user question.
+    """
 
+    return f"""
+Document Context:
+{context}
+
+Question:
+{question}
+
+Instructions:
+- Answer ONLY using the document context above.
+- Do not use outside knowledge.
+- If the answer is explicitly present, provide it clearly.
+- If the answer is strongly implied, mention that it is inferred.
+- If the answer cannot be found in the context, say:
+  "I couldn't find this information in this document."
+
+Answer:
+"""
 
 
 # MAIN RAG FUNCTION
@@ -99,7 +122,7 @@ def query_document(question: str,
     
     total_chunks = get_document_chunk_count(document_id) 
     print("step 3: got chunk count")
-    
+    n_results = min(n_results, total_chunks)
     
 
     # ── Step 2: Smart retrieval ──
