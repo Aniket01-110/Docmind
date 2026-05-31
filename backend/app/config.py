@@ -10,5 +10,6 @@ DEBUG = os.getenv("DEBUG", "True")=="True"
 
 print(f"App Name: {APP_NAME}")
 print(f"Debug Mode: {DEBUG}")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
