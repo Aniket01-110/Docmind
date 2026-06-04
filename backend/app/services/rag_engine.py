@@ -45,8 +45,10 @@ Rules:
 5. If information is missing entirely, say:
 "I couldnt find this information in this document"
 6.Keep answers concise, helpful, and context-aware
+7.If the document type can be inferred, identify it accurately.
+8.Do not guess beyond it.
 
-7. When possible,  mention which part of the document supports the answer"""                                                                                                                                                                                                        
+9. When possible,  mention which part of the document supports the answer"""                                                                                                                                                                                                        
 
 
 # BUILD CONTEXT
