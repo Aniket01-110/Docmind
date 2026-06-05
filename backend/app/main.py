@@ -11,7 +11,9 @@ app = FastAPI(
 ) #app object , it creates entire web application in one object called app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:5173"],
+    allow_origins = ["http://localhost:5173",
+    "https://docmind-rho.vercel.app"],
+
     allow_credentials = True,
     allow_methods=["*"],
     allow_headers=["*"],
